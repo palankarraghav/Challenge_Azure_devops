@@ -1,0 +1,28 @@
+# Usually deployment is done using release pipeline where artifact is downloaded and deployed to the web service.
+
+# writting yml tasks for that
+
+
+pool:
+  name: ubuntu-latest
+
+steps:
+
+  - task: DownloadBuildArtifacts@1
+    displayName: Downloading Build Artifact
+    inputs:
+      buildType: 'specific'
+      project: 'a7fb077f-71b4-4bd1-a8b5-56e9d3d15420'
+      pipeline: '13'
+      buildVersionToDownload: 'latest'
+      downloadType: 'specific'
+      downloadPath: '$(System.ArtifactsDirectory)'
+
+  - task: AzureRmWebDeployment@4
+    displayName: Application Deployment
+    condition: false
+    inputs:
+      azureSubscription: 'service_connection_name'
+      appType: 'webApp'
+      WebAppName: 'example-uiapp'
+      packageForLinux: '$(System.ArtifactsDirectory)/Build'

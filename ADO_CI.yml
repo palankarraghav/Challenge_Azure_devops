@@ -1,0 +1,45 @@
+trigger:
+- main
+- feature/*
+
+pool:
+  name: Azure Pipelines
+
+steps:
+  - task: Npm@1
+    displayName: 'Install'
+    inputs:
+      workingDir: 'myado-app'
+      command: 'install'
+            
+  - task: Npm@1
+    displayName: 'Test'
+    continueOnError: false
+    inputs:
+      workingDir: 'myado-app'
+      command: 'custom'
+      customCommand: 'run lint'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Drop Test Result'
+    inputs:
+      PathtoPublish: 'myado-app/eslint-report.xml'
+      ArtifactName: 'Test Result'
+      publishLocation: 'Container'
+
+  - task: Npm@1
+    displayName: 'Build'
+    continueOnError: false
+    inputs:
+      workingDir: 'myado-app'
+      command: 'custom'
+      customCommand: 'run build'
+        
+  - task: PublishBuildArtifacts@1
+    displayName: 'Build Drop'
+    inputs:
+      PathtoPublish: 'myado-app/build'
+      ArtifactName: 'Build'
+      publishLocation: 'Container'
+
+
